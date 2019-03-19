@@ -21,8 +21,8 @@ class CreateReservesTable extends Migration
             $table->enum('status', ['reserved', 'canceled', 'paid', 'concluded']);
             $table->timestamps();
 
-            $table->foreing('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreing('flight_id')->references('id')->on('flights')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('flight_id')->references('id')->on('flights')->onDelete('cascade');
         });
     }
 
