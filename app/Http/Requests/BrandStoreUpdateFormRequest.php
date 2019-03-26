@@ -23,8 +23,9 @@ class BrandStoreUpdateFormRequest extends FormRequest
      */
     public function rules()
     {
+        $id = '';
         return [
-            'name'  =>  'required|min:3|max:100|unique:brands',
+            'name'  =>  'required|min:3|max:100|unique:brands,name,{$id},id',
         ];
     }
 }

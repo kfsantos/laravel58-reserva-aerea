@@ -14,78 +14,67 @@
 
 <div class="content-din bg-white">
 
-<div class="form-search">
-    <form class="form form-inline">
-        <input type="text" name="nome" placeholder="Nome:" class="form-control">
-        <button class="btn btn-search">Pesquisar</button>
-    </form>
-</div>
-
-<div class="messages">
-    @if(session ('success'))
-    <div class="alert alert-success">
-        {{session('success')}}
+    <div class="form-search">
+            <!-- <input type="text" name="nome" placeholder="Nome:" class="form-control"> -->
+        {!! Form::open(['route' => 'brands.search', 'class' => 'form form-inline' ]) !!}
+            {!! Form::text('key_search', null, ['class' => 'form-control', 'placeholder' => 'O que deseja encontrar?']) !!}
+            <button class="btn btn-search">Pesquisar</button>
+        {!!Form::close()!!}
     </div>
+
+    @if(isset($dataForm['key_search']))
+
+        <div class="alert alert-info">
+            <p>
+                <a href="{{ route('brands.index') }}"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+                Resultados para: <strong>{{$dataForm['key_search']}}</strong>
+            </p>
+        </div>
+
     @endif
-    @if(session ('error'))
-    <div class="alert alert-danger">
-        {{session('error')}}
+
+
+    <div class="messages">
+      @include('panel.includes.alerts')
     </div>
+
+    <div class="class-btn-insert">
+        <a href="{{ route('brands.create') }}" class="btn-insert">
+            <span class="glyphicon glyphicon-plus"></span>
+            Cadastrar
+        </a>
+    </div>
+
+    <table class="table table-striped">
+        <tr>
+            <th>Nome</th>
+            <th>Criado Em:</th>
+            <th>Atualizado Em:</th>
+            <th width="150">Ações</th>
+        </tr>
+        @forelse($brands as $brand)
+            <tr>
+                <td>{{ $brand->name }}</td>
+                <td>{{ $brand->created_at}}</td>
+                <td>{{ $brand->updated_at }}</td>
+                <td>
+                    <a href="{{route('brands.edit', $brand->id)}}" class="edit">Edit</a>
+                    <a href="{{route('brands.show', $brand->id)}}" class="delete">View</a>
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="200">Nenhum item Cadastrado!</td>
+            </tr>
+        @endforelse
+    </table>
+
+<!-- DataForm é necessário para paginação não perder os dados para a outra página -->
+    @if(isset($dataForm))
+        {!! $brands->appends($dataForm)->links() !!}
+    @else
+        {!! $brands->links() !!}
     @endif
-
-</div>
-
-<div class="class-btn-insert">
-    <a href="{{ route('brands.create') }}" class="btn-insert">
-        <span class="glyphicon glyphicon-plus"></span>
-        Cadastrar
-    </a>
-</div>
-
-<table class="table table-striped">
-    <tr>
-        <th>Nome</th>
-        <th>Criado Em:</th>
-        <th>Atualizado Em:</th>
-        <th width="150">Ações</th>
-    </tr>
-    @forelse($brands as $brand)
-        <tr>
-            <td>{{ $brand->name }}</td>
-            <td>{{ $brand->created_at}}</td>
-            <td>{{ $brand->updated_at }}</td>
-            <td>
-                <a href="{{route('brands.edit', $brand->id)}}" class="edit">Edit</a>
-                <a href="{{route('brands.destroy', $brand->id)}}" class="delete">Delete</a>
-            </td>
-        </tr>
-    @empty
-        <tr>
-            <td colspan="200">Nenhum item Cadastrado!</td>
-        </tr>
-    @endforelse
-</table>
-
-<nav aria-label="Page navigation">
-  <ul class="pagination">
-    <li>
-      <a href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
-    </li>
-    <li><a href="#">1</a></li>
-    <li><a href="#">2</a></li>
-    <li><a href="#">3</a></li>
-    <li><a href="#">4</a></li>
-    <li><a href="#">5</a></li>
-    <li>
-      <a href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-
 </div><!--Content Dinâmico-->
 
 @endsection

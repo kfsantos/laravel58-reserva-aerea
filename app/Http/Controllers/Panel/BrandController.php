@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Panel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Brand;
-use App\Requests\BrandStoreUpdateFormRequest;
+use App\Http\Requests\BrandStoreUpdateFormRequest;
 
 class BrandController extends Controller
 {
     private $brand;
+    protected $totalpage = 20;
+
     public function __construct(Brand $brand ){
         $this->brand = $brand;
     }
@@ -23,7 +25,7 @@ class BrandController extends Controller
     {
         $title = "Marcas de Avões";
 
-        $brands = $this->brand->all();
+        $brands = $this->brand->paginate($this->totalpage);
 
 
         return view('panel.brands.index', compact('title', 'brands'));
@@ -38,7 +40,7 @@ class BrandController extends Controller
     {
         $title = "Cadastrar Aviões";
 
-        return view('panel.brands.create', compact('title'));
+        return view('panel.brands.create-edit', compact('title'));
     }
 
     /**
@@ -68,7 +70,15 @@ class BrandController extends Controller
      */
     public function show($id)
     {
+        $brand = $this->brand->find($id);
         
+        if(!$brand){
+            return redirect()->back();
+        }
+
+        $title = "Detalhes da Marca: {$brand->name}";
+
+        return view('panel.brands.show', compact('brand', 'title'));
     }
 
     /**
@@ -86,7 +96,7 @@ class BrandController extends Controller
         }
 
         $title = "Editar Marca: {$brand->name}";
-        return view('panel.brands.edit', compact('brand', 'title'));
+        return view('panel.brands.create-edit', compact('brand', 'title'));
     }
 
     /**
@@ -127,12 +137,22 @@ class BrandController extends Controller
             return redirect()->back();
         }
 
-        $delete = $brand->update($request->all());
-
-        if($delete){
+        if($brand->delete()){
             return redirect()->route('brands.index')->with('success', 'Remoção realizado com sucesso!');
         }else{
             return redirect()->back()->with('error', 'Falha ao Remover!');
         }
+    }
+
+
+    public function search(Request $request){
+
+        $dataForm = $request->except('_token');
+
+        $brands = $this->brand->search($request->key_search,$this->totalpage);
+
+        $title = "Brands, filtros para: {$request->key_search}";
+
+        return view('panel.brands.index', compact('title', 'brands', 'dataForm'));
     }
 }
