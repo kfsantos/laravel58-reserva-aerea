@@ -7,6 +7,8 @@ Route::group(['prefix' => 'panel', 'namespace' => 'Panel'], function() {
    
     Route::resource('brands', 'BrandController');
 
+    Route::resource('planes', 'PlaneController');
+
     Route::get('/', 'PanelController@index')->name('panel');
 });
 
