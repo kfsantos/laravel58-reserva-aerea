@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Panel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Plane;
+use App\Model\Brand;
 
 class PlaneController extends Controller
 {
@@ -36,7 +37,11 @@ class PlaneController extends Controller
      */
     public function create()
     {
-        //
+        $title = "Cadastro de aviões";
+        $brands = Brand::pluck('name', 'id');
+        $classes = $this->plane->classes();
+
+        return view('panel.planes.create', compact('title', 'classes', 'brands'));
     }
 
     /**
@@ -47,7 +52,19 @@ class PlaneController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dataForm = $request->all();
+        $insert = $this->plane->create($dataForm);
+
+        if($insert){
+            return redirect()
+                        ->route('planes.index') 
+                        ->with('success', 'Cadastro realizado com sucesso!');
+        }else{
+            return redirect()
+                        ->back()
+                        ->with('error', 'Falha ao Cadastrar!')
+                        ->withInput();
+        }
     }
 
     /**
@@ -93,5 +110,16 @@ class PlaneController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    public function search(Request $request){
+        $dataForm = $request->except('_token');
+
+        $planes = $this->plane->search($request->key_search, $this->totalpage);
+
+        $title = "Planes, filtros para: {$request->key_search}";
+
+        return view('panel.planes.index', compact('title', 'planes', 'dataForm'));
     }
 }
