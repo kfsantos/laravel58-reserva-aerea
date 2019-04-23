@@ -114,10 +114,9 @@ class PlaneController extends Controller
 
 
     public function search(Request $request){
+        
         $dataForm = $request->except('_token');
-
         $planes = $this->plane->search($request->key_search, $this->totalpage);
-
         $title = "Planes, filtros para: {$request->key_search}";
 
         return view('panel.planes.index', compact('title', 'planes', 'dataForm'));
